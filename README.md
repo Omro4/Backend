@@ -83,5 +83,14 @@ $ npm run start:prod
 
 ### Users
 - `POST /users` - Create user
-- `GET /users` - Get all users (with pagination)
-- `GET /users/:id` - Get user
+- `GET /users` - Get all users (DESC order with pagination)
+- `GET /users/:id` - Get one user
+- `PUT /users/:id` - Update user's info
+- `DELETE /users/:id` - Delete user
+
+### Categories
+- `POST /categories` - Create category
+- `GET /categories` - Get all categories (ASC order with pagination)
+- `GET /categories/:id` - Get one category
+- `PUT /categories/:id` - Update category's info
+- `DELETE /categories/:id` - Delete category
