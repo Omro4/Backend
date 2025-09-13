@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import { User, UserRole } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -61,7 +62,7 @@ export class UsersService {
   }
 
   // 4-update()
-  async update(id: number, updateData: Partial<CreateUserDto>): Promise<User> {
+  async update(id: number, updateData: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);

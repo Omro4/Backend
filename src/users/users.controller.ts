@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -24,7 +25,7 @@ export class UsersController {
   // 2- findAll()
   @Get()
   async findAll(
-    @Query('offset') offset: number = 0, // كانت 1 وخليتها 0 حتى ما يطير واحد من المستخدمين
+    @Query('offset') offset: number = 0,
     @Query('limit') limit: number = 10,
   ) {
     return this.usersService.findAll(offset, limit);
@@ -38,10 +39,7 @@ export class UsersController {
 
   // 4- update()
   @Put(':id')
-  async update(
-    @Param('id') id: number,
-    @Body() updateUserDto: Partial<CreateUserDto>,
-  ) {
+  async update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
   }
 
