@@ -5,6 +5,14 @@ export class CreateCategoryDto {
   @MinLength(3)
   name: string;
 
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @IsString()
+  @IsOptional()
+  image?: string;
+
   @IsNumber()
   @IsOptional()
   productId?: number;
