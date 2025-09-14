@@ -20,7 +20,6 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { Max } from 'class-validator';
 
 @Controller('categories')
 export class CategoriesController {
@@ -52,7 +51,7 @@ export class CategoriesController {
     )
     image?: Express.Multer.File,
   ) {
-    return this.categoriesService.create(createCategoryDto);
+    return this.categoriesService.create(createCategoryDto, image);
   }
 
   // 2- findAll()
