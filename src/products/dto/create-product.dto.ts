@@ -24,5 +24,5 @@ export class CreateProductDto {
   @IsNumber()
   @IsPositive()
   @IsOptional()
-  categoryId?: number;
+  categoryId: number;
 }
