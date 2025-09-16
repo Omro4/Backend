@@ -9,10 +9,6 @@ export class CreateCategoryDto {
   @IsOptional()
   description?: string;
 
-  @IsString()
-  @IsOptional()
-  image?: string;
-
   @IsNumber()
   @IsOptional()
   productId?: number;

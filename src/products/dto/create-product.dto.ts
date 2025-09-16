@@ -25,4 +25,9 @@ export class CreateProductDto {
   @IsPositive()
   @IsOptional()
   categoryId: number;
+
+  @IsNumber()
+  @IsPositive()
+  @IsOptional()
+  imageId: number;
 }

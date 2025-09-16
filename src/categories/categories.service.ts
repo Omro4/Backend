@@ -11,7 +11,6 @@ import { Product } from '../products/entities/product.entity';
 
 @Injectable()
 export class CategoriesService {
-  [x: string]: any;
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
@@ -43,7 +42,6 @@ export class CategoriesService {
 
   // 2-findAll()
   async findAll(offset: number = 0, limit: number = 10): Promise<object> {
-    // I used Promise<object> instade of Promise<{}> because `{}` (\"empty object\") type allows any non-nullish value, including literals like `0` and `\"\"`
     const [data, count] = await this.categoryRepository.findAndCount({
       skip: offset,
       take: limit,
@@ -70,12 +68,13 @@ export class CategoriesService {
   async update(
     id: number,
     updateData: Partial<CreateCategoryDto>,
+    image?: Express.Multer.File,
   ): Promise<Category> {
     const category = await this.findOne(id);
     if (!category) {
       throw new NotFoundException(`Category with id ${id} not found`);
     }
-    const { name } = updateData;
+    const { name, description } = updateData;
     // Check name uniqueness if name is changed
     if (name && name !== category.name) {
       const existingCategory = await this.categoryRepository.findOne({
@@ -86,6 +85,9 @@ export class CategoriesService {
       }
     }
     if (name !== undefined) category.name = name;
+    if (description !== undefined) category.description = description;
+    if (image !== undefined)
+      category.image = `/uploads/categories/${image ? image.filename : ''}`;
     return this.categoryRepository.save(category);
   }
 

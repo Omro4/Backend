@@ -1,31 +1,31 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
+  Get,
   Param,
+  Patch,
   Delete,
-  Put,
-  Query,
-  ParseIntPipe,
-  DefaultValuePipe,
   UseInterceptors,
   UploadedFile,
   ParseFilePipe,
   MaxFileSizeValidator,
+  FileTypeValidator,
+  ParseIntPipe,
+  DefaultValuePipe,
+  Query,
 } from '@nestjs/common';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { CategoriesService } from './categories.service';
-import { UpdateCategoryDto } from './dto/update-category.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { CategoriesService } from './categories.service';
 
 @Controller('categories')
 export class CategoriesController {
-  constructor(private readonly categoriesService: CategoriesService) {}
+  constructor(private readonly categoryService: CategoriesService) {}
 
-  // 1- create()
   @Post()
   @UseInterceptors(
     FileInterceptor('image', {
@@ -43,60 +43,66 @@ export class CategoriesController {
     @Body() createCategoryDto: CreateCategoryDto,
     @UploadedFile(
       new ParseFilePipe({
+        validators: [new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 })],
+        fileIsRequired: false,
+      }),
+    )
+    image?: Express.Multer.File,
+  ) {
+    return this.categoryService.create(createCategoryDto, image);
+  }
+
+  @Get()
+  async getAll() {
+    return this.categoryService.findAll();
+  }
+
+  @Get(':id')
+  async getById(@Param('id') id: number) {
+    return this.categoryService.findOne(id);
+  }
+
+  @Patch(':id')
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './uploads/categories',
+        filename: (req, file, callback) => {
+          const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = extname(file.originalname);
+          callback(null, `${uniqueName}${ext}`);
+        },
+      }),
+    }),
+  )
+  async update(
+    @Param('id') id: number,
+    @Body() updateCategoryDto: UpdateCategoryDto,
+    @UploadedFile(
+      new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }), // 5MB
+          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }),
+          new FileTypeValidator({ fileType: /.(jpg|jpeg|png|gif)$/ }),
         ],
         fileIsRequired: false,
       }),
     )
     image?: Express.Multer.File,
   ) {
-    return this.categoriesService.create(createCategoryDto, image);
+    return this.categoryService.update(id, updateCategoryDto, image);
   }
 
-  // 2- findAll()
-  @Get()
-  async findAll(
-    @Query('offset') offset: number = 0,
-    @Query('limit') limit: number = 10,
-  ) {
-    return this.categoriesService.findAll(offset, limit);
-  }
-
-  // 3- findOne()
-  @Get(':id')
-  async findOne(@Param('id') id: number) {
-    return this.categoriesService.findOne(id);
-  }
-
-  // 4- update()
-  @Put(':id')
-  async update(
-    @Param('id') id: number,
-    @Body() updateCategoryDto: UpdateCategoryDto,
-  ) {
-    return this.categoriesService.update(id, updateCategoryDto);
-  }
-
-  // 5- remove()
   @Delete(':id')
   async remove(@Param('id') id: number) {
-    return this.categoriesService.remove(id);
+    return this.categoryService.remove(id);
   }
 
-  // 6- جديد: إيجاد category مع products
-  // GET /categories/:id/products
-  // http://localhost:3000/categories/1/products?offset=0&limit=10
-  // http://localhost:3000/categories/1/products
-  // http://localhost:3000/categories/1/products?offset=5&limit=5
-  // http://localhost:3000/categories/1/products?offset=10&limit=5
-  // http://localhost:3000/categories/1/products?offset=15&limit=5
   @Get(':id/products')
   async findOneWithProducts(
     @Param('id', ParseIntPipe) id: number,
     @Query('offset', new DefaultValuePipe(0), ParseIntPipe) offset: number = 0,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
   ) {
-    return this.categoriesService.findOneWithProducts(id, offset, limit);
+    return this.categoryService.findOneWithProducts(id, offset, limit);
   }
 }

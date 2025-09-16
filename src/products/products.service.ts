@@ -11,6 +11,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CategoriesService } from 'src/categories/categories.service';
 // import { Category } from 'src/categories/entities/category.entity';
+// import { ProductImagesService } from 'src/product_images/product_images.service';
 
 @Injectable()
 export class ProductsService {
@@ -18,6 +19,7 @@ export class ProductsService {
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
     private readonly categoriesService: CategoriesService,
+    // private readonly productImagesService: ProductImagesService,
   ) {}
 
   // 1-create()
