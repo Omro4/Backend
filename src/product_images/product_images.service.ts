@@ -25,7 +25,7 @@ export class ProductImagesService {
     const { productId, isPrimary, altText } = createProductImageDto;
 
     if (!productId) {
-      throw new Error('productId must be provided');
+      throw new NotFoundException('productId must be provided');
     }
 
     const product = await this.productsService.findOne(productId);
@@ -34,7 +34,10 @@ export class ProductImagesService {
       throw new NotFoundException(`Product with ID ${productId} not found`);
     }
 
-    if (isPrimary) {
+    const isPrimaryBoolean =
+      typeof isPrimary === 'boolean' ? isPrimary : isPrimary === 'true';
+
+    if (isPrimaryBoolean === true) {
       const existingPrimary = await this.productImageRepository.findOne({
         where: { product_id: productId, is_primary: true },
       });
@@ -49,14 +52,14 @@ export class ProductImagesService {
       : createProductImageDto.imageUrl;
 
     if (!imageUrl) {
-      throw new Error('Either file or imageUrl must be provided');
+      throw new NotFoundException('Either file or imageUrl must be provided');
     }
 
     const productImage = this.productImageRepository.create({
       product_id: productId,
       product,
       image_url: imageUrl,
-      is_primary: isPrimary || false,
+      is_primary: isPrimaryBoolean || false,
       alt_text: altText,
     });
 
@@ -135,6 +138,13 @@ export class ProductImagesService {
             is_primary: true,
           },
         });
+
+      if (
+        existingPrimaryProductImage &&
+        existingPrimaryProductImage.id === id
+      ) {
+        return productImage;
+      }
 
       if (existingPrimaryProductImage) {
         existingPrimaryProductImage.is_primary = false;
