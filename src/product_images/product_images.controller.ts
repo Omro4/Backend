@@ -14,6 +14,7 @@ import {
   DefaultValuePipe,
   Query,
   Body,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
