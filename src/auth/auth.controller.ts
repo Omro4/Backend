@@ -3,7 +3,7 @@ import {
   Post,
   Body,
   UseGuards,
-  Get,
+  // Get,
   Patch,
   HttpCode,
   HttpStatus,

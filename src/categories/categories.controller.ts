@@ -14,6 +14,7 @@ import {
   ParseIntPipe,
   DefaultValuePipe,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -21,12 +22,18 @@ import { extname } from 'path';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CategoriesService } from './categories.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRole } from '../users/entities/user.entity';
 
 @Controller('categories')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class CategoriesController {
   constructor(private readonly categoryService: CategoriesService) {}
 
   @Post()
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
@@ -63,6 +70,7 @@ export class CategoriesController {
   }
 
   @Patch(':id')
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
@@ -93,6 +101,7 @@ export class CategoriesController {
   }
 
   @Delete(':id')
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   async remove(@Param('id') id: number) {
     return this.categoryService.remove(id);
   }

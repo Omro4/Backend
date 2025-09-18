@@ -21,12 +21,18 @@ import { extname } from 'path';
 import { CreateProductImageDto } from './dto/create-product_image.dto';
 import { UpdateProductImageDto } from './dto/update-product_image.dto';
 import { ProductImagesService } from './product_images.service';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { UserRole } from '../users/entities/user.entity';
 
 @Controller('product-images')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class ProductImagesController {
   constructor(private readonly productImagesService: ProductImagesService) {}
 
   @Post()
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
@@ -78,6 +84,7 @@ export class ProductImagesController {
   }
 
   @Patch(':id')
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateProductImageDto: UpdateProductImageDto,
@@ -86,11 +93,13 @@ export class ProductImagesController {
   }
 
   @Patch(':id/set-primary')
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   async setAsPrimary(@Param('id', ParseIntPipe) id: number) {
     return this.productImagesService.setAsPrimary(id);
   }
 
   @Delete(':id')
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   async remove(@Param('id', ParseIntPipe) id: number) {
     return this.productImagesService.remove(id);
   }

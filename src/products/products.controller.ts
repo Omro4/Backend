@@ -9,17 +9,24 @@ import {
   Put,
   Query,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ProductsService } from './products.service';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { UserRole } from '../users/entities/user.entity';
 
 @Controller('products')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   // 1- create()
   @Post()
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   async create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
   }
@@ -41,6 +48,7 @@ export class ProductsController {
 
   // 4- update()
   @Put(':id')
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   async update(
     @Param('id') id: number,
     @Body() updateProductDto: UpdateProductDto,
@@ -50,6 +58,7 @@ export class ProductsController {
 
   // 5- remove()
   @Delete(':id')
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   async remove(@Param('id') id: number) {
     return this.productsService.remove(id);
   }
