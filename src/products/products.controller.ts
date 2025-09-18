@@ -18,6 +18,8 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { UserRole } from '../users/entities/user.entity';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('products')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -27,6 +29,21 @@ export class ProductsController {
   // 1- create()
   @Post()
   @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Post()
+@ApiOperation({
+  summary: 'Create a new product',
+  description: 'Creates a new product'
+})
+@ApiBody({ type: CreateUserDto })
+@ApiResponse({
+  status: 201,
+  description: 'product successfully created',
+  type: CreateProductDto
+})
+@ApiResponse({
+  status: 409,
+  description: 'product already exists'
+})
   async create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
   }

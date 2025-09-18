@@ -18,6 +18,7 @@ import { User } from './entities/user.entity';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { UserRole } from 'src/users/entities/user.entity';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -27,6 +28,21 @@ export class UsersController {
   // 1- create()
   @Post()
   @Roles(UserRole.SUPER_ADMIN)
+ @Post()
+@ApiOperation({
+  summary: 'Create a new user',
+  description: 'Creates a new user account'
+})
+@ApiBody({ type: CreateUserDto })
+@ApiResponse({
+  status: 201,
+  description: 'User successfully created',
+  type: User
+})
+@ApiResponse({
+  status: 409,
+  description: 'Email already exists'
+})
   async create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
