@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
@@ -94,3 +95,7 @@ $ npm run start:prod
 - `GET /categories/:id` - Get one category
 - `PUT /categories/:id` - Update category's info
 - `DELETE /categories/:id` - Delete category
+=======
+# Backend
+My Backend 
+>>>>>>> a0f68d7bc0d944f0c103996ae31dc072e8fd25b9
